@@ -1,0 +1,24 @@
+{
+  "name": "memdog",
+  "version": "1.0.0",
+  "description": "A lightweight CLI tool to monitor process memory usage and alert via system notifications",
+  "main": "bin/memdog.js",
+  "bin": {
+    "memdog": "./bin/memdog.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["memory", "monitor", "process", "watchdog", "cli"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "pidusage": "^3.0.2",
+    "ps-list": "^8.1.0",
+    "node-notifier": "^10.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
