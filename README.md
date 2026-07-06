@@ -183,6 +183,8 @@ memdog notify-test
 
 日志文件：`~/.memdog/log.txt`
 
+后台守护进程只记录启动、停止、通知、采样失败、进程未运行、超过阈值、恢复正常等状态变化；普通正常采样不会每轮刷日志。日志文件默认最多保留约 1MB，超过后会保留最新内容。可通过环境变量 `MEMDOG_MAX_LOG_BYTES` 调整上限。
+
 ## 多实例进程匹配
 
 像 `node`、`java` 这种通用运行时，进程名相同但实际对应不同服务。MemDog 支持通过 `--cmd` 按命令行子串匹配：
@@ -200,10 +202,10 @@ memdog add 企业微信 --cmd "com.tencent.WeWorkMac"
 
 ## 通知机制
 
-- **macOS**：通过 `osascript` 调用系统原生通知，支持提示音和自定义图标（需放置 `assets/icon.png`）。
+- **macOS**：通过 `/usr/bin/osascript` 调用系统原生通知，并记录真实执行结果。
 - **Windows / Linux**：使用 `node-notifier` 发送原生通知。
 
-纯 SSH / 服务器环境可能无法弹出通知，失败时会自动降级写入日志。
+纯 SSH / 服务器环境可能无法弹出通知。通知失败时会写入日志，可通过 `memdog log` 查看 `osascript` 的错误信息。
 
 ## 常见问题
 

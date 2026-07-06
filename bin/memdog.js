@@ -220,12 +220,16 @@ program
 program
   .command('notify-test')
   .description('发送一条测试通知，用于确认通知权限')
-  .action(() => {
-    notify({
+  .action(async () => {
+    const sent = await notify({
       title: 'MemDog 通知测试',
       message: '如果你看到这条消息，说明通知权限正常 🔔'
     });
-    console.log('测试通知已发送，请检查系统通知栏。');
+    if (sent) {
+      console.log('测试通知已发送，请检查系统通知栏。');
+    } else {
+      console.log(`测试通知发送失败，请查看日志: ${LOG_FILE}`);
+    }
   });
 
 program
@@ -265,7 +269,7 @@ program
 
         const sample = await sampleTarget(target);
         const threshold = target.threshold !== undefined ? target.threshold : tickConfig.threshold;
-      const overThreshold = isOverThreshold(sample, threshold);
+        const overThreshold = isOverThreshold(sample, threshold);
 
         if (sample.details.length === 0) {
           console.log(`${new Date().toLocaleTimeString()} ${target.name} 所有 PID 采样失败`);
@@ -279,9 +283,12 @@ program
             const message = sample.pids.length === 1
               ? `${target.name} (PID: ${sample.pids[0]}) 内存 ${sample.totalMemory.toFixed(1)} MB，超过阈值 ${threshold} MB`
               : `${target.name} (${sample.pids.length} 个进程) 总内存 ${sample.totalMemory.toFixed(1)} MB，超过阈值 ${threshold} MB`;
-            notify({ title: 'MemDog 内存告警', message });
+            const sent = await notify({ title: 'MemDog 内存告警', message });
             alarmCooldown.set(target.name, now);
             console.log(`${new Date().toLocaleTimeString()} ALARM: ${message}`);
+            if (!sent) {
+              console.log(`${new Date().toLocaleTimeString()} 通知发送失败，请查看日志: ${LOG_FILE}`);
+            }
           } else {
             console.log(`${new Date().toLocaleTimeString()} ${target.name} 总内存 ${sample.totalMemory.toFixed(1)} MB / 阈值: ${threshold} MB (冷却中，未报警)`);
           }
