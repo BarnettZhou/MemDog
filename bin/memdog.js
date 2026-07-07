@@ -40,7 +40,8 @@ function isDaemonRunning() {
 program
   .name('memdog')
   .description('内存看门狗：监控进程内存，超阈值时系统通知告警')
-  .version('1.0.0');
+  .version('1.0.0')
+  .helpCommand(false);
 
 program
   .command('add <process-name>')
@@ -310,5 +311,60 @@ program
       process.exit(0);
     });
   });
+
+program
+  .command('help [command]')
+  .description('查看帮助信息')
+  .action((commandName) => {
+    if (!commandName) {
+      printGeneralHelp();
+      return;
+    }
+
+    const command = program.commands.find(cmd => cmd.name() === commandName);
+    if (!command || command.name() === 'help') {
+      console.error(`未知命令: ${commandName}`);
+      console.error('可运行 memdog help 查看所有命令。');
+      process.exitCode = 1;
+      return;
+    }
+
+    command.outputHelp();
+  });
+
+function printGeneralHelp() {
+  console.log(`
+MemDog - 内存看门狗
+
+用法:
+  memdog <命令> [参数]
+
+常用流程:
+  memdog add WeChat --threshold 256
+  memdog start
+  memdog status
+  memdog log
+  memdog stop
+
+命令:
+  add <process-name>              添加监听进程
+  remove <process-name-or-index>  移除监听目标
+  list                            查看监听名单和运行状态
+  threshold <mb>                  设置全局内存阈值
+  set-threshold <index> <mb>      设置单个目标阈值
+  interval <seconds>              设置采样间隔
+  start                           后台启动监控
+  stop                            停止监控
+  status                          查看守护进程状态
+  log [lines]                     查看最近日志
+  notify-test                     发送测试通知
+  run                             前台运行，方便调试
+  help [command]                  查看帮助信息
+
+更多:
+  memdog help <command>
+  memdog <command> --help
+`.trim());
+}
 
 program.parse();

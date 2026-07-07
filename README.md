@@ -11,6 +11,7 @@ npm link        # 可选，安装后可在任意目录执行 memdog
 ```
 
 安装完成后，使用 `memdog --help` 查看所有命令。
+也可以使用 `memdog help` 查看中文速查帮助。
 
 ## 快速开始
 
@@ -134,6 +135,7 @@ memdog start       # 后台启动监控
 memdog stop        # 停止监控
 memdog status      # 查看守护进程是否运行
 memdog log [lines] # 查看最近 N 行日志，默认 50 行
+memdog help        # 查看中文速查帮助
 ```
 
 示例：
